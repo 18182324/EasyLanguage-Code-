@@ -1,4 +1,4 @@
-EasyLanguage Code To Tes The Predictability Of An Event
+EasyLanguage Code To TesT The Predictability Of An Event
 Vars:
 	Event(false),
 	FuturePrice(0),
