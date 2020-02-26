@@ -1,0 +1,41 @@
+EasyLanguage Code To Tes The Predictability Of An Event
+Vars:
+	Event(false),
+	FuturePrice(0),
+	I(0),
+	CG(0),
+	Denom(0);
+
+Arrays:
+	PredictBin[100](0);
+
+{>>>>>>>>> Code for Event Goes Here <<<<<<<<<<}
+
+If Event Then Begin
+	FuturePrice = 100*(Close - Close[9]) / Close[9];	//Future is referenced to 10 bars back
+	If FuturePrice < -10 Then FuturePrice = -10;	//Limits lower price to -10%
+	If FuturePrice > 10 Then FuturePrice = 10;	//Limits higher price to +10%
+	FuturePrice = 5*(FuturePrice + 10);	//scale -10% to +10% to be 0 - 100
+End;
+//Place the FuturePrices into one of 100 bins
+If FuturePrice <> FuturePrice[1] Then Begin
+	For I = 1 to 100 Begin
+		If FuturePrice > I - 1 and FuturePrice <= I Then PredictBin[I] = PredictBin[I] + 1;
+	End;
+End;
+//Measure center of gravity as a quick estimate
+CG = 0;
+Denom = 0;
+For I = 1 to 100 Begin
+	CG = CG + I*PredictBin[I];
+	Denom = Denom + PredictBin[I];
+End;
+CG = (CG/Denom-50)/5;
+
+Plot1(CG);
+
+If LastBarOnChart Then Begin
+	For I = 0 to 100 Begin
+		Print(File("C:\PDFTest\PDF.CSV"), .2*I - 10, ",", PredictBin[I]);
+	End;
+End;
